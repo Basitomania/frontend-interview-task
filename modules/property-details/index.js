@@ -4,9 +4,8 @@ import React from "react";
 import { Button } from "../../components/button";
 import RowContainer from "../../components/row-container";
 import {
-  AccountHeadline, AccountLabel, AccountList, AccountListItem, AccountSection, InfoText, Inset
+  AccountHeadline, AccountLabel, AccountList, AccountListItem, AccountSection, InfoText, Inset, AccountListItemFlex, ValuationValue, ValuationText
 } from "./style";
-
 
 const account = {
   uid: "65156cdc-5cfd-4b34-b626-49c83569f35e",
@@ -33,22 +32,42 @@ const account = {
   updateAfterDays: 30,
 };
 
-const Detail = ({}) => {
+const formatAmount = (amount) => {
+  return new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "GBP",
+  }).format(amount)
+}
+
+const Detail = ({ }) => {
+  const { recentValuation, originalPurchasePrice, originalPurchasePriceDate } = account;
+
   let mortgage;
   const lastUpdate = new Date(account.lastUpdate);
   if (account.associatedMortgages.length) {
     mortgage = account.associatedMortgages[0];
   }
 
+  const currentYear = new Date().getFullYear();
+  const purchaseYear = new Date(originalPurchasePriceDate).getFullYear();
+  const purchaseMonth = new Date(originalPurchasePriceDate).toLocaleString('default', { month: 'long' });
+
+  const numberOfYearsSincePurchase = currentYear - purchaseYear;
+
+  const sincePurchase = recentValuation.amount - originalPurchasePrice;
+  const sincePurchasePercentage = (sincePurchase / originalPurchasePrice) * 100;
+  const annualAppreciation = sincePurchasePercentage / numberOfYearsSincePurchase;
+
+  const refinedAmount =  formatAmount(sincePurchase)
+
+  const refinedPurchasePrice = formatAmount(originalPurchasePrice)
+
   return (
     <Inset>
       <AccountSection>
         <AccountLabel>Estimated Value</AccountLabel>
         <AccountHeadline>
-          {new Intl.NumberFormat("en-GB", {
-            style: "currency",
-            currency: "GBP",
-          }).format(account.recentValuation.amount)}
+          {formatAmount(recentValuation.amount)}
         </AccountHeadline>
         <AccountList>
           <AccountListItem><InfoText>
@@ -72,6 +91,28 @@ const Detail = ({}) => {
           </AccountList>
         </RowContainer>
       </AccountSection>
+
+      <AccountSection>
+        <AccountLabel>Valuation changes</AccountLabel>
+        <AccountList>
+          <AccountListItem><InfoText>
+            {`Purchased for ${refinedPurchasePrice} in ${purchaseMonth} ${purchaseYear}`}
+          </InfoText></AccountListItem>
+          <AccountListItemFlex>
+            <InfoText>Since purchase</InfoText>
+            <ValuationValue>
+              <ValuationText>{`${refinedAmount} (${sincePurchasePercentage}%)`}</ValuationText>
+            </ValuationValue>
+          </AccountListItemFlex>
+          <AccountListItemFlex>
+            <InfoText>Annual appreciation</InfoText>
+            <ValuationValue>
+              <ValuationText>{`${annualAppreciation}%`}</ValuationText>
+            </ValuationValue>
+          </AccountListItemFlex>
+        </AccountList>
+      </AccountSection>
+
       {mortgage && (
         <AccountSection>
           <AccountLabel>Mortgage</AccountLabel>
