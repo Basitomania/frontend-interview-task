@@ -46,3 +46,31 @@ export const AccountListItem = styled.div`
 export const Inset = styled.div`
   padding: 0 ${(props) => props.theme.space.m};
 `;
+
+export const AccountListItemFlex = styled.div`
+  display: flex;
+  flexDirection: row;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+
+  &:not(:last-of-type) {
+    margin-bottom: ${(props) => props.theme.space.m};
+  }
+`;
+
+export const ValuationValue = styled.div`
+  background-color: ${(props) => props.theme.colors.green.light};
+  border-radius: 50px;
+  padding: 10px 20px;
+
+  @media (max-width: ${(props) => props.theme.breakpoints.xs}px) {
+    width: 170px;
+  }
+`;
+
+export const ValuationText = styled.div`
+  line-height: 1.6;
+  font-size: ${(props) => props.theme.typography.m.fontSize};
+  color: ${(props) => props.theme.colors.green.dark};
+`;
